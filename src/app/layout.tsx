@@ -2,7 +2,10 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { GeistSans } from "next/font/geist";
 
-const font = GeistSans;
+const font = GeistSans({
+  subsets: ['latin'],
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   title: "鱼智查 - 闲鱼商品风险查询工具",
