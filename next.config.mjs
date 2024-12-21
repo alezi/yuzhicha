@@ -9,4 +9,4 @@ const config = {
   trailingSlash: true,
 }
 
-export default config
+export default config 
