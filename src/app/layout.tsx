@@ -1,29 +1,22 @@
 import type { Metadata } from "next";
-import { Geist } from "next/font/google";
 import "./globals.css";
-import React from "react";
+import { GeistSans } from "next/font/geist";
 
-const geist = Geist({
-  subsets: ["latin"],
-});
+const font = GeistSans;
 
 export const metadata: Metadata = {
-  title: "鱼智查 - 智能商品风险识别系统",
-  description: "智能识别商品风险，为您的店铺报价护航",
+  title: "鱼智查 - 闲鱼商品风险查询工具",
+  description: "帮助用户识别闲鱼商品潜在风险的查询工具",
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: {
+  children: React.ReactNode
+}) {
   return (
-    <html lang="zh" className="scroll-smooth">
-      <body className={`${geist.className} antialiased`}>
-        <div className="page-transition">
-          {children}
-        </div>
-      </body>
+    <html lang="zh-CN" className={font.className}>
+      <body>{children}</body>
     </html>
   );
 }
