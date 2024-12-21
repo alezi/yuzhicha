@@ -1,11 +1,5 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { GeistSans } from "next/font/geist";
-
-const font = GeistSans({
-  subsets: ['latin'],
-  display: 'swap',
-});
 
 export const metadata: Metadata = {
   title: "鱼智查 - 闲鱼商品风险查询工具",
@@ -18,8 +12,8 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="zh-CN" className={font.className}>
-      <body>{children}</body>
+    <html lang="zh-CN">
+      <body className="font-sans antialiased">{children}</body>
     </html>
   );
 }
