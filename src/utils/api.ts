@@ -4,8 +4,7 @@ function getApiBaseUrl() {
   console.debug('NODE_ENV:', process.env.NODE_ENV);
   console.debug('NEXT_PUBLIC_API_URL:', process.env.NEXT_PUBLIC_API_URL);
   
-  // 始终使用相对路径，让Next.js的rewrites处理实际的API调用
-  return '/api';
+  return process.env.NEXT_PUBLIC_API_URL || 'https://yuzhicha.com';
 }
 
 // 模拟数据
@@ -59,7 +58,7 @@ export async function checkRisk(input: string | string[]) {
   }
 
   try {
-    const apiUrl = `${getApiBaseUrl()}/check`;
+    const apiUrl = `${getApiBaseUrl()}/api/check`;
     console.debug('Making API request to:', apiUrl);
     
     const response = await fetch(apiUrl, {
