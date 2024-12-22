@@ -3,29 +3,28 @@ function getApiBaseUrl() {
   return process.env.NEXT_PUBLIC_API_URL || 'https://yuzhicha.com';
 }
 
-export async function checkRisk(input: string | string[]) {
+export async function checkRisk(input: string) {
   try {
     const apiUrl = `${getApiBaseUrl()}/api/match-keywords`;
-    console.debug('Making API request to:', apiUrl);
+    
+    const requestData = { content: input };
+    console.debug('Request data:', requestData);
     
     const response = await fetch(apiUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        titles: Array.isArray(input) ? input : [input]
-      }),
-    })
+      body: JSON.stringify(requestData)
+    });
 
-    if (!response.ok) {
-      throw new Error('API请求失败')
-    }
+    const result = await response.json();
+    console.debug('API response:', result);
 
-    return await response.json()
+    return result;
   } catch (error) {
-    console.error('检查风险失败:', error)
-    throw error
+    console.error('检查风险失败:', error);
+    throw error;
   }
 }
 

@@ -1,8 +1,31 @@
+'use client';
+
+import { useState } from 'react';
 import Link from 'next/link'
 import { SearchBox } from '@/components/SearchBox'
 import { MobileMenu } from '@/components/MobileMenu'
+import { checkRisk } from '@/utils/api';
+import SearchResults from '@/components/SearchResults';
 
 export default function Home() {
+  const [results, setResults] = useState([]);
+  const [error, setError] = useState('');
+
+  async function handleSearch(searchText: string) {
+    setError('');
+    try {
+      const result = await checkRisk(searchText);
+      if (result.matches && result.matches.length > 0) {
+        setResults(result.matches);
+      } else {
+        setResults([]);
+      }
+    } catch (error) {
+      console.error('搜索失败:', error);
+      setError(error instanceof Error ? error.message : '查询失败，请稍后重试');
+    }
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* 导航栏 */}
@@ -50,7 +73,13 @@ export default function Home() {
               为闲鱼卖家提供专业的虚拟商品风险监测服务
             </p>
             <div className="max-w-3xl mx-auto">
-              <SearchBox />
+              <SearchBox onSearch={handleSearch} />
+              {error && (
+                <div className="mt-4 p-4 bg-red-50 text-red-500 rounded-lg">
+                  {error}
+                </div>
+              )}
+              {results.length > 0 && <SearchResults results={results} />}
             </div>
           </div>
         </section>
@@ -113,7 +142,7 @@ export default function Home() {
                   <div>
                     <h3 className="text-xl font-semibold mb-2">查看风险分析</h3>
                     <p className="text-gray-600">
-                      系统会显示风险等级、投诉记录和处理建议
+                      系统会显示风险等级、投诉记���和处理建议
                     </p>
                   </div>
                 </div>
