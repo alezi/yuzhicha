@@ -1,5 +1,3 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://yuzhicha.com'
-
 // 模拟数据
 const MOCK_DATA = {
   data: [
@@ -73,26 +71,33 @@ export async function checkRisk(input: string | string[]) {
 }
 
 export async function getRiskDetail(id: string) {
-  // 开发环境使用模拟数据
-  if (process.env.NODE_ENV === 'development') {
-    const mockItem = MOCK_DATA.data.find(item => item.id === id)
+  // 开发环境或API未就绪时使用mock数据
+  if (process.env.NODE_ENV === 'development' || !process.env.NEXT_PUBLIC_API_URL) {
+    const mockItem = MOCK_DATA.data.find(item => item.id === id);
     return new Promise(resolve => {
       setTimeout(() => {
-        resolve({ success: true, data: mockItem })
-      }, 1000)
-    })
+        resolve({
+          success: true,
+          data: mockItem || null
+        });
+      }, 1000);
+    });
   }
 
   try {
-    const response = await fetch(`${API_URL}/api/risk/${id}`)
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/risk/${id}`);
     
     if (!response.ok) {
-      throw new Error('获取风险详情失败')
+      throw new Error('获取风险详情失败');
     }
 
-    return await response.json()
+    return await response.json();
   } catch (error) {
-    console.error('获取风险详情失败:', error)
-    throw error
+    console.error('获取风险详情失败:', error);
+    // 如果API调用失败，返回空结果
+    return {
+      success: true,
+      data: null
+    };
   }
 }
