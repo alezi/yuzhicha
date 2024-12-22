@@ -4,19 +4,8 @@ function getApiBaseUrl() {
   console.debug('NODE_ENV:', process.env.NODE_ENV);
   console.debug('NEXT_PUBLIC_API_URL:', process.env.NEXT_PUBLIC_API_URL);
   
-  // 如果是开发环境或没有API URL，返回相对路径
-  if (process.env.NODE_ENV === 'development' || !process.env.NEXT_PUBLIC_API_URL) {
-    return '/api';
-  }
-  
-  try {
-    // 尝试使用配置的API URL
-    const url = new URL(process.env.NEXT_PUBLIC_API_URL);
-    return url.toString().replace(/\/$/, '');
-  } catch (error) {
-    console.warn('Invalid API URL, falling back to relative path:', error);
-    return '/api';
-  }
+  // 始终使用相对路径，让Next.js的rewrites处理实际的API调用
+  return '/api';
 }
 
 // 模拟数据
