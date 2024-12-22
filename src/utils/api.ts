@@ -26,35 +26,8 @@ const MOCK_DATA = {
 };
 
 export async function checkRisk(input: string | string[]) {
-  // 添加调试日志
-  console.debug('Checking risk for input:', input);
-  
-  // 开发环境或API未就绪时使用mock数据
-  if (process.env.NODE_ENV === 'development' || !process.env.NEXT_PUBLIC_API_URL) {
-    console.debug('Using mock data');
-    return new Promise(resolve => {
-      setTimeout(() => {
-        const titles = Array.isArray(input) ? input : [input];
-        const results = MOCK_DATA.data.filter(item => 
-          titles.some(title => 
-            item.title.toLowerCase().includes(title.toLowerCase()) ||
-            title.toLowerCase().includes(item.title.toLowerCase()) ||
-            item.keywords.some(keyword => 
-              title.toLowerCase().includes(keyword.toLowerCase())
-            )
-          )
-        );
-        
-        resolve({
-          success: true,
-          data: results.length ? results : []
-        });
-      }, 1000);
-    });
-  }
-
   try {
-    const apiUrl = `${getApiBaseUrl()}/api/check`;
+    const apiUrl = `${getApiBaseUrl()}/api/match-keywords`;
     console.debug('Making API request to:', apiUrl);
     
     const response = await fetch(apiUrl, {
@@ -65,21 +38,16 @@ export async function checkRisk(input: string | string[]) {
       body: JSON.stringify({
         titles: Array.isArray(input) ? input : [input]
       }),
-    });
+    })
 
     if (!response.ok) {
-      throw new Error(`API请求失败: ${response.status}`);
+      throw new Error('API请求失败')
     }
 
-    const data = await response.json();
-    console.debug('API response:', data);
-    return data;
+    return await response.json()
   } catch (error) {
-    console.error('检查风险失败:', error);
-    return {
-      success: true,
-      data: []
-    };
+    console.error('检查风险失败:', error)
+    throw error
   }
 }
 
