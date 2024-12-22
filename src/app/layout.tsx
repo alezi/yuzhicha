@@ -6,8 +6,6 @@ export const metadata: Metadata = {
   description: "帮助用户识别闲鱼商品潜在风险的查询工具",
 };
 
-export const runtime = 'edge';
-
 export default function RootLayout({
   children,
 }: {
