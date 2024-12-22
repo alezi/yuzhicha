@@ -12,7 +12,11 @@ export function SearchBox({ onSearch }: SearchBoxProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (searchText.trim()) {
-      await onSearch(searchText);
+      try {
+        await onSearch(searchText);
+      } catch (error) {
+        console.error('Search error:', error);
+      }
     }
   };
 
