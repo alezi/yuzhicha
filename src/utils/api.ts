@@ -1,3 +1,24 @@
+// 获取API基础URL的函数
+function getApiBaseUrl() {
+  // 添加调试日志
+  console.debug('NODE_ENV:', process.env.NODE_ENV);
+  console.debug('NEXT_PUBLIC_API_URL:', process.env.NEXT_PUBLIC_API_URL);
+  
+  // 如果是开发环境或没有API URL，返回相对路径
+  if (process.env.NODE_ENV === 'development' || !process.env.NEXT_PUBLIC_API_URL) {
+    return '/api';
+  }
+  
+  try {
+    // 尝试使用配置的API URL
+    const url = new URL(process.env.NEXT_PUBLIC_API_URL);
+    return url.toString().replace(/\/$/, '');
+  } catch (error) {
+    console.warn('Invalid API URL, falling back to relative path:', error);
+    return '/api';
+  }
+}
+
 // 模拟数据
 const MOCK_DATA = {
   data: [
@@ -21,8 +42,12 @@ const MOCK_DATA = {
 };
 
 export async function checkRisk(input: string | string[]) {
+  // 添加调试日志
+  console.debug('Checking risk for input:', input);
+  
   // 开发环境或API未就绪时使用mock数据
   if (process.env.NODE_ENV === 'development' || !process.env.NEXT_PUBLIC_API_URL) {
+    console.debug('Using mock data');
     return new Promise(resolve => {
       setTimeout(() => {
         const titles = Array.isArray(input) ? input : [input];
@@ -40,12 +65,15 @@ export async function checkRisk(input: string | string[]) {
           success: true,
           data: results.length ? results : []
         });
-      }, 1000); // 模拟网络延迟
+      }, 1000);
     });
   }
 
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/check`, {
+    const apiUrl = `${getApiBaseUrl()}/check`;
+    console.debug('Making API request to:', apiUrl);
+    
+    const response = await fetch(apiUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -56,13 +84,14 @@ export async function checkRisk(input: string | string[]) {
     });
 
     if (!response.ok) {
-      throw new Error('API请求失败');
+      throw new Error(`API请求失败: ${response.status}`);
     }
 
-    return await response.json();
+    const data = await response.json();
+    console.debug('API response:', data);
+    return data;
   } catch (error) {
     console.error('检查风险失败:', error);
-    // 如果API调用失败，返回空结果而不是抛出错误
     return {
       success: true,
       data: []
@@ -71,8 +100,12 @@ export async function checkRisk(input: string | string[]) {
 }
 
 export async function getRiskDetail(id: string) {
+  // 添加调试日志
+  console.debug('Getting risk detail for id:', id);
+  
   // 开发环境或API未就绪时使用mock数据
   if (process.env.NODE_ENV === 'development' || !process.env.NEXT_PUBLIC_API_URL) {
+    console.debug('Using mock data for detail');
     const mockItem = MOCK_DATA.data.find(item => item.id === id);
     return new Promise(resolve => {
       setTimeout(() => {
@@ -85,16 +118,20 @@ export async function getRiskDetail(id: string) {
   }
 
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/risk/${id}`);
+    const apiUrl = `${getApiBaseUrl()}/risk/${id}`;
+    console.debug('Making API request to:', apiUrl);
+    
+    const response = await fetch(apiUrl);
     
     if (!response.ok) {
-      throw new Error('获取风险详情失败');
+      throw new Error(`获取风险详情失败: ${response.status}`);
     }
 
-    return await response.json();
+    const data = await response.json();
+    console.debug('API response:', data);
+    return data;
   } catch (error) {
     console.error('获取风险详情失败:', error);
-    // 如果API调用失败，返回空结果
     return {
       success: true,
       data: null
