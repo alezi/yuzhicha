@@ -1,9 +1,5 @@
 // 获取API基础URL的函数
 function getApiBaseUrl() {
-  // 添加调试日志
-  console.debug('NODE_ENV:', process.env.NODE_ENV);
-  console.debug('NEXT_PUBLIC_API_URL:', process.env.NEXT_PUBLIC_API_URL);
-  
   return process.env.NEXT_PUBLIC_API_URL || 'https://yuzhicha.com';
 }
 
